@@ -54,40 +54,7 @@
     <meta name="description" content="Visual timer to prevent disturbance from others">
     <meta name="author" content="Jer Lance <me@jerlance.com>">
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
-    <style type="text/css">
-    body {
-      font-family: "Lucida Console", Monaco, monospace;
-      background-color: DarkSlateBlue;
-      color: white;
-    }
-    #timer {
-      font-size: 54pt;
-      font-weight: bold;
-      text-align: center;
-    }
-    #content {
-      font-size: 36pt;
-      text-align: center;
-    }
-    #arrow {
-      font-size: 64pt;
-      font-weight: bold;
-    }
-    #footer {
-      position: relative;
-    }
-    #copyright {
-      position: absolute;
-      bottom: 5px;
-      right: 10px;
-      text-align: right;
-      font-size: 10pt;
-      font-style: italic;
-    }
-    .busy {
-      color: red;
-    }
-    </style>
+    <link rel="stylesheet" type="text/css" href="dnd.css" />
 </head>
 <body>
     <header>
@@ -98,11 +65,11 @@
             &uarr;
         </div>
         <div id="contentText">I'm not busy, please feel free to interrupt.</div>
-        <div id="timerURL"><?php echo $timerUrl; ?></div>
         <div id="control">
             <button id="btnControl">Start</button>&nbsp;
             <button id="btnReset">Reset</button>
         </div>
+        <div id="timerURL">View my status at: <a href="<?php echo $timerURL; ?>"><?php echo $timerURL; ?></a></div>
     </div>
     <footer>
         <div id="copyright">&copy;2013 Jer Lance &lt;me@jerlance.com&gt;</div>

@@ -1,0 +1,47 @@
+body {
+    font-family: "Lucida Console", Monaco, monospace;
+    background-color: black;
+    color: lime;
+}
+a {
+    text-decoration: none;
+    font-weight: bold;
+    color: AntiqueWhite;
+}
+a:visited {
+    font-weight: normal;
+}
+a:hover {
+    text-decoration: underline;
+}
+#timer {
+  font-size: 54pt;
+  font-weight: bold;
+  text-align: center;
+}
+#content {
+  font-size: 36pt;
+  text-align: center;
+}
+#timerURL {
+   font-size: 20pt;
+   color: white;
+}
+#arrow {
+  font-size: 64pt;
+  font-weight: bold;
+}
+#footer {
+  position: relative;
+}
+#copyright {
+  position: absolute;
+  bottom: 5px;
+  right: 10px;
+  text-align: right;
+  font-size: 10pt;
+  font-style: italic;
+}
+.busy {
+  color: red;
+}
