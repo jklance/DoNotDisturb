@@ -21,41 +21,33 @@
     THE SOFTWARE.
 -->
 <?php
-$delayTime = 1;        // In minutes
-$timeFile = "time_ending.txt";
-$endingTime = time();
+    $timeFile = "time_ending.txt";
+    $endingTime = time();
+    $timeLeft = 0;
 
-if (file_exists($timeFile)) {
+    if (file_exists($timeFile)) {
         $fh = fopen($timeFile, "r");
-                $endingTime = fread($fh, filesize($timeFile));
-                    fclose($fh);
-} else {
-        $fh = fopen($timeFile, "w");
-                $endingTime += $delayTime * 60;
-                        fwrite($fh, $endingTime);
-                            fclose($fh);
-}
-$timeLeft = $endingTime - time();
-if ($timeLeft < 0) {
-        $timeLeft = 0;
-}
+            $endingTime = fread($fh, filesize($timeFile));
+        fclose($fh);
+        $timeLeft = $endingTime - time();
+    }
 
-echo gmdate("i:s", $endingTime);
-echo "<br>";
-echo gmdate("i:s", $timeLeft);
+    if ($timeLeft < 0) {
+            $timeLeft = 0;
+    }
 ?>
-
 <html lang="en">
 <head>
     <script type="text/javascript">
-        var startingTime = "30:00";
+        var defaultTime = 30;
+        var startingTime = "<?php echo gmdate("i:s", $timeLeft); ?>";
         var busyText = "Please do not interrupt me for this much longer. Thanks!";
         var freeText = "I'm not busy, please feel free to interrupt.";
         var buttonStartText = "Start";
         var buttonStopText = "Stop";
         var buttonResetText = "Reset";
     </script>
-    <title>DoNotDisturb Timer</title>
+    <title>DoNotDisturb Admin</title>
     <meta charset="utf-8">
     <meta name="description" content="Visual timer to prevent disturbance from others">
     <meta name="author" content="Jer Lance <me@jerlance.com>">
@@ -124,8 +116,13 @@ $(document).ready(function() {
     $("#arrow").hide();
     $("#btnControl").text(buttonStartText);
 
+    if (startingTime != "00:00") {
+        doStartTimerActions();
+    }
     $("#btnControl").click( function() { handleButtonClick(); });
     $("#btnReset").click( function() { handleResetClick(); });
+
+    setTimeout(function() { location.reload(); }, 10000);
 });
 
 function countdown() {
@@ -151,20 +148,21 @@ function handleButtonClick() {
     var currBtnText = $("#btnControl").text();
     switch(currBtnText) {
         case buttonStartText:
-            doStartTimerActions();
+            handleResetClick();
             break;
         case buttonStopText:
             doStopTimerActions();
-            break;
-        case buttonResetText:
-            doResetTimerActions();
             break;
     }
 }
 
 function handleResetClick() {
-    doStopTimerActions();
-    $('#timer').text(startingTime);
+    $.ajax({
+        url: "resetTimer.php?delay_time=" + defaultTime,
+        success: function() {
+            location.reload();
+        }
+    });
 }
 
 function doStartTimerActions() {
@@ -183,7 +181,12 @@ function doStopTimerActions() {
     $("#contentText").text(freeText);
     $("#arrow").hide();
     styleTextAsFree();
-    clearInterval(execTimer);
+    $.ajax({
+        url: "clearTimer.php",
+        success: function() {
+            location.reload();
+        }
+    });
 }
 function styleTextAsBusy() {
     $('header').addClass('busy');

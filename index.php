@@ -21,34 +21,26 @@
     THE SOFTWARE.
 -->
 <?php
-$delayTime = 1;        // In minutes
-$timeFile = "time_ending.txt";
-$endingTime = time();
+    $timeFile = "time_ending.txt";
+    $endingTime = time();
+    $timeLeft = 0;
 
-if (file_exists($timeFile)) {
+    if (file_exists($timeFile)) {
         $fh = fopen($timeFile, "r");
-                $endingTime = fread($fh, filesize($timeFile));
-                    fclose($fh);
-} else {
-        $fh = fopen($timeFile, "w");
-                $endingTime += $delayTime * 60;
-                        fwrite($fh, $endingTime);
-                            fclose($fh);
-}
-$timeLeft = $endingTime - time();
-if ($timeLeft < 0) {
-        $timeLeft = 0;
-}
+            $endingTime = fread($fh, filesize($timeFile));
+        fclose($fh);
+        $timeLeft = $endingTime - time();
+    }
 
-echo gmdate("i:s", $endingTime);
-echo "<br>";
-echo gmdate("i:s", $timeLeft);
+    if ($timeLeft < 0) {
+            $timeLeft = 0;
+    }
 ?>
 
 <html lang="en">
 <head>
     <script type="text/javascript">
-        var startingTime = "30:00";
+        var startingTime = "<?php echo gmdate("i:s", $timeLeft); ?>";
         var busyText = "Please do not interrupt me for this much longer. Thanks!";
         var freeText = "I'm not busy, please feel free to interrupt.";
         var buttonStartText = "Start";
@@ -104,10 +96,6 @@ echo gmdate("i:s", $timeLeft);
             &uarr;
         </div>
         <div id="contentText">I'm not busy, please feel free to interrupt.</div>
-        <div id="control">
-            <button id="btnControl">Start</button>&nbsp;
-            <button id="btnReset">Reset</button>
-        </div>
     </div>
     <footer>
         <div id="copyright">&copy;2013 Jer Lance &lt;me@jerlance.com&gt;</div>
@@ -124,8 +112,11 @@ $(document).ready(function() {
     $("#arrow").hide();
     $("#btnControl").text(buttonStartText);
 
-    $("#btnControl").click( function() { handleButtonClick(); });
-    $("#btnReset").click( function() { handleResetClick(); });
+    if (startingTime != "00:00") {
+        doStartTimerActions();
+    }
+
+    setTimeout(function() { location.reload(); }, 10000);
 });
 
 function countdown() {
@@ -147,25 +138,6 @@ function decrementTime() {
     $("#timer").text(mins + ":" + secs);
 }
 
-function handleButtonClick() {
-    var currBtnText = $("#btnControl").text();
-    switch(currBtnText) {
-        case buttonStartText:
-            doStartTimerActions();
-            break;
-        case buttonStopText:
-            doStopTimerActions();
-            break;
-        case buttonResetText:
-            doResetTimerActions();
-            break;
-    }
-}
-
-function handleResetClick() {
-    doStopTimerActions();
-    $('#timer').text(startingTime);
-}
 
 function doStartTimerActions() {
     var timerTxt = $('#timer').text();
