@@ -22,6 +22,8 @@
 -->
 <?php
     $timeFile = "time_ending.txt";
+    $timerURL = "http://jerlance.com/dnd";
+
     $endingTime = time();
     $timeLeft = 0;
 
@@ -96,6 +98,7 @@
             &uarr;
         </div>
         <div id="contentText">I'm not busy, please feel free to interrupt.</div>
+        <div id="timerURL"><?php echo $timerUrl; ?></div>
         <div id="control">
             <button id="btnControl">Start</button>&nbsp;
             <button id="btnReset">Reset</button>
