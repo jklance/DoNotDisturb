@@ -23,6 +23,7 @@
 <?php
     $timeFile = "time_ending.txt";
     $timerURL = "http://jerlance.com/dnd";
+    $reloadTime = 60;
 
     $endingTime = time();
     $timeLeft = 0;
@@ -92,7 +93,7 @@ $(document).ready(function() {
     $("#btnControl").click( function() { handleButtonClick(); });
     $("#btnReset").click( function() { handleResetClick(); });
 
-    setTimeout(function() { location.reload(); }, 10000);
+    setTimeout(function() { location.reload(); }, <?php echo $reloadTime * 1000; ?>);
 });
 
 function countdown() {

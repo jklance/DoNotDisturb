@@ -51,7 +51,7 @@
     <meta charset="utf-8">
     <meta name="description" content="Visual timer to prevent disturbance from others">
     <meta name="author" content="Jer Lance <me@jerlance.com>">
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" href="dnd.css" />
 </head>
 <body>
@@ -63,6 +63,7 @@
             &uarr;
         </div>
         <div id="contentText">I'm not busy, please feel free to interrupt.</div>
+        <div id="timerURL">Why am I doing this? <a href="http://heeris.id.au/2013/this-is-why-you-shouldnt-interrupt-a-programmer" target="_blank">Interruptions cost time and quality!</a></div>
     </div>
     <footer>
         <div id="copyright">&copy;2013 Jer Lance &lt;me@jerlance.com&gt;</div>
