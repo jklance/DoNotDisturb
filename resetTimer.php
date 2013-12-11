@@ -1,10 +1,15 @@
 <?php
-$delayTime = $_GET['delay_time'];        // In minutes
-if (!$delayTime) { 
-    $delayTime = 30;
+$configs = parse_ini_file('default.ini.php', true);
+if (!is_array($configs)) {
+    die(header("Status: 501"));
 }
 
-$timeFile = "time_ending.txt";
+$delayTime = $_GET['delay_time'];        // In minutes
+if (!$delayTime) { 
+    $delayTime = $configs['general']['default_timer'];
+}
+
+$timeFile = $configs['paths']['time_file'];
 $endingTime = time();
 
 $fh = fopen($timeFile, "w");

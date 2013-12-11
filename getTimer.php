@@ -1,5 +1,9 @@
 <?php
-$timeFile = "time_ending.txt";
+$configs = parse_ini_file('default.ini.php', true);
+if (!is_array($configs)) {
+    die(header("Status: 501"));
+}
+$timeFile = $configs['paths']['time_file'];
 $endingTime = time();
 $timeLeft = 0;
 

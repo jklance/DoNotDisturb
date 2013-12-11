@@ -26,12 +26,16 @@
         die('Failure loading configurations.');
     }
 ?>
-<html lang="en">
+<html ng-app lang="en">
 <head>
     <script type="text/javascript">
+        var defaultTime     = <?php echo $configs['general']['default_timer']; ?>;
         var startingTime    = "00:00";
         var busyText        = "<?php echo $configs['site_text']['busy_text']; ?>";
         var freeText        = "<?php echo $configs['site_text']['free_text']; ?>";
+        var buttonStartText = "<?php echo $configs['site_buttons']['start_text']; ?>";
+        var buttonStopText  = "<?php echo $configs['site_buttons']['stop_text']; ?>";
+        var buttonResetText = "<?php echo $configs['site_buttons']['reset_text']; ?>";
         var siteUrl         = "<?php echo $configs['paths']['install_url']; ?>";
         var pollingTime     = <?php echo $configs['general']['polling_time']; ?> * 1000;
     </script>
@@ -39,132 +43,30 @@
     <meta charset="utf-8">
     <meta name="description" content="Visual timer to prevent disturbance from others">
     <meta name="author" content="Jer Lance <me@jerlance.com>">
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <!--script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script-->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.4/angular.min.js"></script>
+    <script src="dnd.js"></script><script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.4/angular.min.js"></script>
     <link rel="stylesheet" type="text/css" href="dnd.css" />
 </head>
 <body>
-    <header>
-        <div id="timer">00:00</div>
+    <div>
+      <label>Name:</label>
+      <input type="text" ng-model="yourName" placeholder="Enter a name here">
+      <hr>
+      <h1>Hello {{yourName}}!</h1>
+    </div>
+    <header ng-controller="TimerCtrl">
+        <div id="timer">{{remaining()}}</div>
     </header>
     <div id="content">
         <div id="arrow">
             &uarr;
         </div>
-        <div id="contentText"><?php echo $configs['site_text']['free_text']; ?></div>
+        <div id="contentText" class="{{timer.status{{}}}}">{{currentStatus()}}</div>
         <div id="timerURL">Why am I doing this? <a href="http://heeris.id.au/2013/this-is-why-you-shouldnt-interrupt-a-programmer" target="_blank">Interruptions cost time and quality!</a></div>
     </div>
-    <footer>
+    <footer> 
         <div id="copyright">&copy;2013 Jer Lance &lt;me@jerlance.com&gt;</div>
     </footer>
 </body>
-
-<script type="text/javascript">
-var secondsLeft = 0;
-var timerRunning = false;
-var execTimer;
-var timerParts;
-
-$(document).ready(function() {
-    $("#timer").text(startingTime);
-    $("#arrow").hide();
-
-    if (startingTime != "00:00") {
-        doStartTimerActions();
-    }
-
-    getCurrentTimeFromServer();
-});
-
-function getCurrentTimeFromServer() {
-    $.ajax({
-        url: siteUrl + "/getTimer.php",
-        type: "GET",
-        success: function(response) {
-            var timeResults = $.parseJSON(response);
-            $('#timer').text(timeResults.time);
-            setTimeout(getCurrentTimeFromServer, pollingTime);
-
-            if (timeResults.time == "00:00") {
-                doStopTimerActions();
-            } else {
-                doStartTimerActions();
-            }
-        }
-    })
-}
-
-function countdown() {
-    secondsLeft = getSecondsLeft(getTimerParts());
-    execTimer = setInterval(decrementTime, 1000);
-}
-
-function decrementTime() {
-    getTimerParts();
-    secondsLeft = getSecondsLeft();
-
-    if (!secondsLeft) {
-        clearInterval(execTimer);
-        doStopTimerActions();
-    }
-
-    var mins = getMinutes();
-    var secs = getSeconds();
-    $("#timer").text(mins + ":" + secs);
-}
-
-
-function doStartTimerActions() {
-    timerRunning = true;
-    var timerTxt = $('#timer').text();
-    if (timerTxt == "00:00") {
-        $('#timer').text(startingTime);
-    }
-    styleTextAsBusy();
-    countdown();
-}
-function doStopTimerActions() {
-    timerRunning = false;
-    styleTextAsFree();
-    clearInterval(execTimer);
-}
-function styleTextAsBusy() {
-    $("#btnControl").text(buttonStopText);
-    $("#contentText").text(busyText);
-    $("#arrow").show();
-    $('header').addClass('busy');
-    $('#content').addClass('busy');
-}
-function styleTextAsFree() {
-    $("#btnControl").text(buttonStartText);
-    $("#contentText").text(freeText);
-    $("#arrow").hide();
-    $('header').removeClass('busy');
-    $('#content').removeClass('busy');
-}
-
-function getTimerParts() {
-    var timer = $("#timer").text();
-    timerParts =timer.split(':');
-}
-
-function getSecondsLeft() {
-    var seconds = parseInt(timerParts[0]) * 60 + parseInt(timerParts[1]);
-    return(--seconds);
-}
-
-function getMinutes() {
-    var mins = Math.floor(secondsLeft / 60);
-    if (mins < 10) {
-        mins = "0" + mins;
-    }
-    return(mins);
-}
-function getSeconds() {
-    var secs = secondsLeft % 60;
-    if (secs < 10) {
-        secs = "0" + secs;
-    }
-    return(secs);
-}
-</script>
 </html>
