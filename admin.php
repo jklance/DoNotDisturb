@@ -20,41 +20,30 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
 -->
-<?php
-    $timeFile = "time_ending.txt";
-    $timerURL = "http://jerlance.com/dnd";
-    $reloadTime = 60;
-
-    $endingTime = time();
-    $timeLeft = 0;
-
-    if (file_exists($timeFile)) {
-        $fh = fopen($timeFile, "r");
-            $endingTime = fread($fh, filesize($timeFile));
-        fclose($fh);
-        $timeLeft = $endingTime - time();
-    }
-
-    if ($timeLeft < 0) {
-            $timeLeft = 0;
+<?php 
+    $configs = parse_ini_file('default.ini.php', true);
+    if (!is_array($configs)) {
+        die('Failure loading configurations.');
     }
 ?>
 <html lang="en">
 <head>
     <script type="text/javascript">
-        var defaultTime = 30;
-        var startingTime = "<?php echo gmdate("i:s", $timeLeft); ?>";
-        var busyText = "Please do not interrupt me for this much longer. Thanks!";
-        var freeText = "I'm not busy, please feel free to interrupt.";
-        var buttonStartText = "Start";
-        var buttonStopText = "Stop";
-        var buttonResetText = "Reset";
+        var defaultTime     = <?php echo $configs['general']['default_timer']; ?>;
+        var startingTime    = "00:00";
+        var busyText        = "<?php echo $configs['site_text']['busy_text']; ?>";
+        var freeText        = "<?php echo $configs['site_text']['free_text']; ?>";
+        var buttonStartText = "<?php echo $configs['site_buttons']['start_text']; ?>";
+        var buttonStopText  = "<?php echo $configs['site_buttons']['stop_text']; ?>";
+        var buttonResetText = "<?php echo $configs['site_buttons']['reset_text']; ?>";
+        var siteUrl         = "<?php echo $configs['paths']['install_url']; ?>";
+        var pollingTime     = <?php echo $configs['general']['polling_time']; ?> * 1000;
     </script>
     <title>DoNotDisturb Admin</title>
     <meta charset="utf-8">
     <meta name="description" content="Visual timer to prevent disturbance from others">
     <meta name="author" content="Jer Lance <me@jerlance.com>">
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" href="dnd.css" />
 </head>
 <body>
@@ -65,12 +54,17 @@
         <div id="arrow">
             &uarr;
         </div>
-        <div id="contentText">I'm not busy, please feel free to interrupt.</div>
+        <div id="contentText"><?php echo $configs['site_text']['free_text']; ?></div>
         <div id="control">
-            <button id="btnControl">Start</button>&nbsp;
-            <button id="btnReset">Reset</button>
+            <button id="btnControl"><?php echo $configs['site_buttons']['start_text']; ?></button>&nbsp;
+            <button id="btnReset"><?php echo $configs['site_buttons']['reset_text']; ?></button>
         </div>
-        <div id="timerURL">View my status at: <a href="<?php echo $timerURL; ?>"><?php echo $timerURL; ?></a></div>
+        <div id="timerURL">
+            View my status at: 
+            <a href="<?php echo $configs['paths']['install_url']; ?>">
+                <?php echo $configs['paths']['install_url']; ?>
+            </a>
+        </div>
     </div>
     <footer>
         <div id="copyright">&copy;2013 Jer Lance &lt;me@jerlance.com&gt;</div>
@@ -93,8 +87,26 @@ $(document).ready(function() {
     $("#btnControl").click( function() { handleButtonClick(); });
     $("#btnReset").click( function() { handleResetClick(); });
 
-    setTimeout(function() { location.reload(); }, <?php echo $reloadTime * 1000; ?>);
+    getCurrentTimeFromServer();
 });
+
+function getCurrentTimeFromServer() {
+    $.ajax({
+        url: siteUrl + "/getTimer.php",
+        type: "GET",
+        success: function(response) {
+            var timeResults = $.parseJSON(response);
+            $('#timer').text(timeResults.time);
+            setTimeout(getCurrentTimeFromServer, pollingTime);
+
+            if (timeResults.time == "00:00") {
+                doStopTimerActions();
+            } else {
+                styleTextAsBusy();
+            }
+        }
+    })
+}
 
 function countdown() {
     secondsLeft = getSecondsLeft(getTimerParts());
@@ -120,21 +132,37 @@ function handleButtonClick() {
     switch(currBtnText) {
         case buttonStartText:
             handleResetClick();
+            resetTimer();
+            doStartTimerActions();
             break;
         case buttonStopText:
+            clearTimer();
             doStopTimerActions();
             break;
     }
 }
 
 function handleResetClick() {
+    resetTimer();
+}
+
+function resetTimer() {
     $.ajax({
-        url: "resetTimer.php?delay_time=" + defaultTime,
+        url: siteUrl + "/resetTimer.php?delay_time=" + defaultTime,
         success: function() {
-            location.reload();
+            getCurrentTimeFromServer();
         }
     });
 }
+function clearTimer() {
+    $.ajax({
+        url: siteUrl + "/clearTimer.php",
+        success: function() {
+
+        }
+    });
+}
+
 
 function doStartTimerActions() {
     var timerTxt = $('#timer').text();
@@ -152,12 +180,7 @@ function doStopTimerActions() {
     $("#contentText").text(freeText);
     $("#arrow").hide();
     styleTextAsFree();
-    $.ajax({
-        url: "clearTimer.php",
-        success: function() {
-            location.reload();
-        }
-    });
+    clearInterval(execTimer);
 }
 function styleTextAsBusy() {
     $('header').addClass('busy');

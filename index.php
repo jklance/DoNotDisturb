@@ -20,32 +20,20 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
 -->
-<?php
-    $timeFile = "time_ending.txt";
-    $endingTime = time();
-    $timeLeft = 0;
-
-    if (file_exists($timeFile)) {
-        $fh = fopen($timeFile, "r");
-            $endingTime = fread($fh, filesize($timeFile));
-        fclose($fh);
-        $timeLeft = $endingTime - time();
-    }
-
-    if ($timeLeft < 0) {
-            $timeLeft = 0;
+<?php 
+    $configs = parse_ini_file('default.ini.php', true);
+    if (!is_array($configs)) {
+        die('Failure loading configurations.');
     }
 ?>
-
 <html lang="en">
 <head>
     <script type="text/javascript">
-        var startingTime = "<?php echo gmdate("i:s", $timeLeft); ?>";
-        var busyText = "Please do not interrupt me for this much longer. Thanks!";
-        var freeText = "I'm not busy, please feel free to interrupt.";
-        var buttonStartText = "Start";
-        var buttonStopText = "Stop";
-        var buttonResetText = "Reset";
+        var startingTime    = "00:00";
+        var busyText        = "<?php echo $configs['site_text']['busy_text']; ?>";
+        var freeText        = "<?php echo $configs['site_text']['free_text']; ?>";
+        var siteUrl         = "<?php echo $configs['paths']['install_url']; ?>";
+        var pollingTime     = <?php echo $configs['general']['polling_time']; ?> * 1000;
     </script>
     <title>DoNotDisturb Timer</title>
     <meta charset="utf-8">
@@ -62,7 +50,7 @@
         <div id="arrow">
             &uarr;
         </div>
-        <div id="contentText">I'm not busy, please feel free to interrupt.</div>
+        <div id="contentText"><?php echo $configs['site_text']['free_text']; ?></div>
         <div id="timerURL">Why am I doing this? <a href="http://heeris.id.au/2013/this-is-why-you-shouldnt-interrupt-a-programmer" target="_blank">Interruptions cost time and quality!</a></div>
     </div>
     <footer>
@@ -72,20 +60,38 @@
 
 <script type="text/javascript">
 var secondsLeft = 0;
+var timerRunning = false;
 var execTimer;
 var timerParts;
 
 $(document).ready(function() {
     $("#timer").text(startingTime);
     $("#arrow").hide();
-    $("#btnControl").text(buttonStartText);
 
     if (startingTime != "00:00") {
         doStartTimerActions();
     }
 
-    setTimeout(function() { location.reload(); }, 10000);
+    getCurrentTimeFromServer();
 });
+
+function getCurrentTimeFromServer() {
+    $.ajax({
+        url: siteUrl + "/getTimer.php",
+        type: "GET",
+        success: function(response) {
+            var timeResults = $.parseJSON(response);
+            $('#timer').text(timeResults.time);
+            setTimeout(getCurrentTimeFromServer, pollingTime);
+
+            if (timeResults.time == "00:00") {
+                doStopTimerActions();
+            } else {
+                doStartTimerActions();
+            }
+        }
+    })
+}
 
 function countdown() {
     secondsLeft = getSecondsLeft(getTimerParts());
@@ -108,28 +114,30 @@ function decrementTime() {
 
 
 function doStartTimerActions() {
+    timerRunning = true;
     var timerTxt = $('#timer').text();
     if (timerTxt == "00:00") {
         $('#timer').text(startingTime);
     }
-    $("#btnControl").text(buttonStopText);
-    $("#contentText").text(busyText);
-    $("#arrow").show();
     styleTextAsBusy();
     countdown();
 }
 function doStopTimerActions() {
-    $("#btnControl").text(buttonStartText);
-    $("#contentText").text(freeText);
-    $("#arrow").hide();
+    timerRunning = false;
     styleTextAsFree();
     clearInterval(execTimer);
 }
 function styleTextAsBusy() {
+    $("#btnControl").text(buttonStopText);
+    $("#contentText").text(busyText);
+    $("#arrow").show();
     $('header').addClass('busy');
     $('#content').addClass('busy');
 }
 function styleTextAsFree() {
+    $("#btnControl").text(buttonStartText);
+    $("#contentText").text(freeText);
+    $("#arrow").hide();
     $('header').removeClass('busy');
     $('#content').removeClass('busy');
 }
