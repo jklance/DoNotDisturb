@@ -1,0 +1,21 @@
+<!doctype html>
+<html ng-app="dndApp">
+  <head>
+    <title>DoNotDisturb Timer</title>
+    <meta charset="utf-8">
+    <meta name="description" content="Visual timer to prevent disturbance from others">
+    <meta name="author" content="Jer Lance <me@jerlance.com>">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.4/angular.min.js"></script>
+    <script src="dnd-server.js"></script>
+    <script src="filters.js"></script>
+    <link rel="stylesheet" type="text/css" href="dnd.css" />
+  </head>
+  <body>
+    <div ng-controller="TimerCtrl">
+        <div id="timer">{{displayTime.h | twoDigit}}:{{displayTime.m | twoDigit}}:{{displayTime.s | twoDigit}}</div>
+        <button type="button" data-ng-click="control()">{{controlButton}}</button>
+        <button type="button" data-ng-click="reset()">{{resetButton}}</button>
+        <div id="myStatus">{{statusText}}</div>
+    </div>
+  </body>
+</html>
