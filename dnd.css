@@ -15,33 +15,60 @@ a:hover {
     text-decoration: underline;
 }
 #timer {
-  font-size: 54pt;
-  font-weight: bold;
-  text-align: center;
+    font-size: 54pt;
+    font-weight: bold;
+    text-align: center;
+    width: 100%;
 }
-#content {
-  font-size: 36pt;
-  text-align: center;
+#myStatus {
+    padding-top: 10px;
+    font-size: 1.5em;
+    text-align: center;
+    clear: both;
+    width: 100%;
 }
-#timerURL {
-   font-size: 20pt;
-   color: white;
-}
-#arrow {
-  font-size: 64pt;
-  font-weight: bold;
+#controlGroup {
+    width: 60px;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    padding: 20px;
 }
 #footer {
-  position: relative;
+    background-color: #ccc;
+    color: black;
+    width: 100%;
+    height: 30px;
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
 }
 #copyright {
-  position: absolute;
-  bottom: 5px;
-  right: 10px;
-  text-align: right;
-  font-size: 10pt;
-  font-style: italic;
+    position: absolute;
+    bottom: 5px;
+    right: 10px;
+    text-align: right;
+    font-size: 10pt;
+    font-style: italic;
 }
 .busy {
-  color: red;
+    color: red;
+}
+#timeControl button {
+    width: 50px;
+}
+#timeSetting input {
+    width: 50px;
+}
+#timeSetting.busy {
+    display: none;
+}
+#timeSetting.free {
+    display: block;
+}
+#networkStatus.up {
+    color: blue;
+}
+#networkStatus.down {
+    color: red;
 }

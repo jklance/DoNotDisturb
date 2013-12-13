@@ -19,4 +19,5 @@ if ($timeLeft < 0) {
 }
 
 header("Status: 200");
-echo json_encode(array("time" => gmdate("i:s", $timeLeft)));
+//echo json_encode(array("time" => gmdate("i:s", $timeLeft)));
+echo json_encode(array("time" => $timeLeft));

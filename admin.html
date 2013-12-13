@@ -11,11 +11,21 @@
     <link rel="stylesheet" type="text/css" href="dnd.css" />
   </head>
   <body>
-    <div ng-controller="TimerCtrl">
-        <div id="timer">{{displayTime.h | twoDigit}}:{{displayTime.m | twoDigit}}:{{displayTime.s | twoDigit}}</div>
-        <button type="button" data-ng-click="control()">{{controlButton}}</button>
-        <button type="button" data-ng-click="reset()">{{resetButton}}</button>
-        <div id="myStatus">{{statusText}}</div>
+    <div ng-controller="TimerCtrl" ng-init="init">
+        <div id="timer" id="timer">{{displayTime.h | twoDigit}}:{{displayTime.m | twoDigit}}:{{displayTime.s | twoDigit}}</div>
+        <div id="controlGroup">
+            <div id="networkStatus" class="{{networkStatus}}">&sect;</div>
+            <div id="timeControl">
+                <button type="button" data-ng-click="control()">{{controlButton}}</button>
+            </div>
+            <div id="timeSetting" class="{{statusClass}}">
+                <input type="text" ng-model="timeSetting" placeholder="{{timeClock}}" />
+            </div>
+        </div>
+        <div id="myStatus" class="{{statusClass}}">{{statusText}}</div>
+        <div id="footer">
+            <div id="copyright">&copy;2013 Jer Lance &lt;me@jerlance.com&gt;</div>
+        </div>
     </div>
   </body>
 </html>

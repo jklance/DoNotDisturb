@@ -13,7 +13,7 @@ $timeFile = $configs['paths']['time_file'];
 $endingTime = time();
 
 $fh = fopen($timeFile, "w");
-    $endingTime += $delayTime * 60;
+    $endingTime += $delayTime;
     fwrite($fh, $endingTime);
 fclose($fh);
 

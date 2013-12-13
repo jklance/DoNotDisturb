@@ -2,7 +2,7 @@
 ; Config file for DoNotDisturb app
 
 [general]
-default_timer = '30'    ; in minutes
+default_timer = '1800'    ; in seconds 
 polling_time = '10'     ; in seconds
 
 [site_text]
