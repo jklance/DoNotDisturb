@@ -12,11 +12,22 @@
   </head>
   <body>
     <div ng-controller="TimerCtrl" ng-init="init">
-        <div id="timer" id="timer">{{displayTime.h | twoDigit}}:{{displayTime.m | twoDigit}}:{{displayTime.s | twoDigit}}</div>
+        <div id="timer" id="timer">{{displayTime.h | twoDigit}}h {{displayTime.m | twoDigit}}m {{displayTime.s | twoDigit}}s</div>
         <div id="controlGroup">
-            <div id="networkStatus" class="{{networkStatus}}">&sect;</div>
+            <div id="networkStatus" title="Network Status ({{networkStatus}})" class="{{networkStatus}}">&sect;</div>
         </div>
-        <div id="myStatus" class="{{statusClass}}">{{statusText}}</div>
+        <div id="content">
+            <div id="myStatus" class="{{statusClass}}">{{statusText}}</div>
+            <div id="infoMessage">
+                <p>
+                    Why do I do this? 
+                    <a href="http://heeris.id.au/2013/this-is-why-you-shouldnt-interrupt-a-programmer" target="_blank">Interruptions cost time and quality!</a>
+                </p>
+                <p>
+                    View my status on the web at <a href="http://jerlance.com/dnd/" target="_blank">jerlance.com/dnd/</a>
+                </p>
+            </div>
+        </div>
         <div id="footer">
             <div id="copyright">&copy;2013 Jer Lance &lt;me@jerlance.com&gt;</div>
         </div>

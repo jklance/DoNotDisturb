@@ -34,6 +34,14 @@ a:hover {
     right: 0px;
     padding: 20px;
 }
+#infoMessage {
+    width: 80%;
+    clear: both;
+    margin: 15px auto;
+    padding: 2px 10px;
+    border: 2px solid lime;
+    display: block;
+}
 #footer {
     background-color: #ccc;
     color: black;
@@ -55,16 +63,20 @@ a:hover {
     color: red;
 }
 #timeControl button {
-    width: 50px;
+    width: 100%;
 }
 #timeSetting input {
-    width: 50px;
+    width: 90%;
 }
 #timeSetting.busy {
     display: none;
 }
 #timeSetting.free {
     display: block;
+}
+#networkStatus {
+    font-size: 1.5em;
+    text-align: center;
 }
 #networkStatus.up {
     color: blue;
