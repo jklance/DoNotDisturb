@@ -95,7 +95,7 @@ dndApp.controller('TimerCtrl', function($scope, $timeout, $http) {
     };
 
     $scope.clearServerTime = function() {
-        $http.get('clearTimer.php')
+        $http.get('api/clearTimer.php')
             .success(
                 function(response, status, headers, config) {
                     $scope.networkStatus = NW_STATUSES.UP;
@@ -111,7 +111,7 @@ dndApp.controller('TimerCtrl', function($scope, $timeout, $http) {
         if (delayTime == undefined) {
             delayTime = DEFAULT_TIME;
         }
-        $http.get('resetTimer.php?delay_time=' + delayTime)
+        $http.get('api/resetTimer.php?delay_time=' + delayTime)
             .success(
                 function(response, status, headers, config) {
                     $scope.networkStatus = NW_STATUSES.UP;
@@ -124,7 +124,7 @@ dndApp.controller('TimerCtrl', function($scope, $timeout, $http) {
     }
 
     $scope.getServerTime = function() {
-        $http.get('getTimer.php')
+        $http.get('api/getTimer.php')
             .success(
                 function(response, status, headers, config) {
                     $scope.networkStatus = NW_STATUSES.UP;

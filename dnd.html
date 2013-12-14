@@ -6,16 +6,225 @@
     <meta name="description" content="Visual timer to prevent disturbance from others">
     <meta name="author" content="Jer Lance <me@jerlance.com>">
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.4/angular.min.js"></script>
-    <script src="dnd.js"></script>
-    <script src="filters.js"></script>
-    <link rel="stylesheet" type="text/css" href="dnd.css" />
+    <script type="text/javascript">
+        var dndApp = angular.module('dndApp', ['dndFilters']);
+
+        dndApp.controller('TimerCtrl', function($scope, $timeout, $http) {
+            var STATUSES        = {
+                "FREE": "I'm not busy, please feel free to interrupt.",
+                "BUSY": "Please do not interrupt me for this much longer. Thanks!",
+            }
+            var STATUS_CODES     = {
+                "FREE": "free",
+                "BUSY": "busy",
+            }
+            var CONTROLS         = {
+                "FREE": "Start",
+                "BUSY": "Stop",
+            }
+            var DEFAULT_TIME     = 30 * 60; // Seconds
+            var REFRESH_INTERVAL = 5;       // Seconds
+
+            var timerObj;
+
+            $scope.timeClock     = DEFAULT_TIME;
+            $scope.timeSetting   = DEFAULT_TIME;
+            $scope.controlButton = CONTROLS.FREE;
+            $scope.statusText    = STATUSES.FREE;
+            $scope.statusClass   = STATUS_CODES.FREE;
+            $scope.displayTime   = {
+                "h": "00",
+                "m": "00",
+                "s": "00",
+            }
+
+            $scope.control = function() {
+                if ($scope.timerIsRunning()) {
+                    $scope.stopTimerButton();
+                } else {
+                    $scope.startTimerButton();
+                }
+            };
+
+            $scope.stopTimerButton = function() {
+                $scope.setPageAsFree();
+                $scope.timeClock = 0;
+                $scope.generateTimeDisplay();
+                $timeout.cancel(timerObj);
+            }
+
+            $scope.startTimerButton = function() {
+                $scope.manageTimeSetting();
+                $scope.setPageAsBusy();
+                $scope.runTimer();
+            }
+
+            $scope.manageTimeSetting = function() {
+                if (!$scope.timeSetting) {
+                    $scope.timeSetting = DEFAULT_TIME;
+                }
+                $scope.timeClock = $scope.timeSetting;
+            }
+
+            $scope.timerIsRunning = function() {
+                if ($scope.controlButton == CONTROLS.FREE) {
+                    return false;
+                }
+                return true;
+            }
+
+            $scope.runTimer = function() {
+                $scope.generateTimeDisplay();
+                timerObj = $timeout( function() {
+                    if ($scope.timeClock == 0) {
+                        $timeout.cancel(timerObj);
+                        $scope.setPageAsFree();
+                    } else {
+                        $scope.setPageAsBusy();
+                        --$scope.timeClock;
+                    }
+                    $scope.runTimer();
+                }, 1000);
+            };
+
+            $scope.generateTimeDisplay = function() {
+                $scope.displayTime.h = Math.floor($scope.timeClock / (60 * 60));
+                $scope.displayTime.m = Math.floor(($scope.timeClock % (60 * 60)) / 60);
+                $scope.displayTime.s = ($scope.timeClock % 60);
+            }
+
+            $scope.setPageAsBusy = function() {
+                $scope.controlButton = CONTROLS.BUSY;
+                $scope.statusText = STATUSES.BUSY;
+                $scope.statusClass = STATUS_CODES.BUSY;
+            };
+
+            $scope.setPageAsFree = function() {
+                $scope.controlButton = CONTROLS.FREE;
+                $scope.statusText = STATUSES.FREE;
+                $scope.statusClass = STATUS_CODES.FREE;
+            };
+        });
+        
+        var dndFilters = angular.module('dndFilters', []);
+
+        dndFilters.filter("twoDigit", function() {
+            return function(inData) {
+                if (inData != null && inData != undefined) {
+                    inData = String(inData);
+                    if (inData.length < 2) {
+                        inData = String("0") + inData;
+                    }
+                }
+                return inData;
+            };
+        });
+    </script>
+    <style type="text/css">
+        body {
+            font-family: "Lucida Console", Monaco, monospace;
+            background-color: black;
+            color: lime;
+        }
+        a {
+            text-decoration: none;
+            font-weight: bold;
+            color: AntiqueWhite;
+        }
+        a:visited {
+            font-weight: normal;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        #timer {
+            font-size: 54pt;
+            font-weight: bold;
+            text-align: center;
+            width: 100%;
+        }
+        #myStatus {
+            padding-top: 10px;
+            font-size: 1.5em;
+            text-align: center;
+            clear: both;
+            width: 100%;
+        }
+        #controlGroup {
+            width: 60px;
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            padding: 20px;
+        }
+        #infoMessage {
+            width: 80%;
+            clear: both;
+            margin: 15px auto;
+            padding: 2px 10px;
+            border: 2px solid lime;
+            display: block;
+        }
+        #footer {
+            background-color: #ccc;
+            color: black;
+            width: 100%;
+            height: 30px;
+            position: absolute;
+            bottom: 0px;
+            left: 0px;
+        }
+        #copyright {
+            position: absolute;
+            bottom: 5px;
+            right: 10px;
+            text-align: right;
+            font-size: 10pt;
+            font-style: italic;
+        }
+        .busy {
+            color: red;
+        }
+        #timeControl button {
+            width: 100%;
+        }
+        #timeSetting input {
+            width: 90%;
+        }
+        #timeSetting.busy {
+            display: none;
+        }
+        #timeSetting.free {
+            display: block;
+        }
+    </style>
   </head>
   <body>
-    <div ng-controller="TimerCtrl">
-        <div id="timer">{{displayTime.h | twoDigit}}:{{displayTime.m | twoDigit}}:{{displayTime.s | twoDigit}}</div>
-        <button type="button" data-ng-click="control()">{{controlButton}}</button>
-        <button type="button" data-ng-click="reset()">{{resetButton}}</button>
-        <div id="myStatus">{{statusText}}</div>
+    <div ng-controller="TimerCtrl" ng-init="init">
+        <div id="timer" id="timer">{{displayTime.h | twoDigit}}h {{displayTime.m | twoDigit}}m {{displayTime.s | twoDigit}}s</div>
+        <div id="controlGroup">
+            <div id="timeControl">
+                <button type="button" data-ng-click="control()">{{controlButton}}</button>
+            </div>
+            <div id="timeSetting" class="{{statusClass}}">
+                <input type="text" ng-model="timeSetting" placeholder="{{timeClock}}" />
+            </div>
+        </div>
+        <div id="content">
+            <div id="myStatus" class="{{statusClass}}">{{statusText}}</div>
+            <div id="infoMessage">
+                <p>
+                    Why do I do this? 
+                    <a href="http://heeris.id.au/2013/this-is-why-you-shouldnt-interrupt-a-programmer" target="_blank">Interruptions cost time and quality!</a>
+                </p>
+                <p>
+                    View my status on the web at <a href="http://jerlance.com/dnd/" target="_blank">jerlance.com/dnd/</a>
+                </p>
+            </div>
+        </div>
+        <div id="footer">
+            <div id="copyright">&copy;2013 Jer Lance &lt;me@jerlance.com&gt;</div>
+        </div>
     </div>
   </body>
 </html>
